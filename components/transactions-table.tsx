@@ -27,7 +27,7 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { cn } from "@workspace/ui/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface Transaction {
   id: string;
@@ -333,7 +333,7 @@ export function TransactionsTable() {
                   buttonVariants({
                     variant: "outline",
                   }),
-                  "size-8 p-0 aria-disabled:pointer-events-none aria-disabled:text-muted-foreground/50 border-none hover:bg-muted/50 dark:bg-card/64 dark:hover:bg-card/80 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.05),0_2px_2px_rgba(0,0,0,0.05),0_2px_4px_rgba(0,0,0,0.05)] dark:inset-shadow-[0_1px_rgb(255_255_255/0.15)]",
+                  "size-8 p-0 aria-disabled:pointer-events-none aria-disabled:text-muted-foreground/50 border-none hover:bg-muted/50 dark:bg-card/64 dark:hover:bg-card/80 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.05),0_2px_2px_rgba(0,0,0,0.05),0_2px_4px_rgba(0,0,0,0.05)] dark:inset-shadow-[0_1px_rgb(255_255_255/0.15)]"
                 )}
                 href={
                   currentPage === 1 ? undefined : `#/page/${currentPage - 1}`
@@ -361,7 +361,7 @@ export function TransactionsTable() {
                   buttonVariants({
                     variant: "outline",
                   }),
-                  "size-8 p-0 aria-disabled:pointer-events-none aria-disabled:text-muted-foreground/50 border-none hover:bg-muted/50 dark:bg-card/64 dark:hover:bg-card/80 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.05),0_2px_2px_rgba(0,0,0,0.05),0_2px_4px_rgba(0,0,0,0.05)] dark:inset-shadow-[0_1px_rgb(255_255_255/0.15)]",
+                  "size-8 p-0 aria-disabled:pointer-events-none aria-disabled:text-muted-foreground/50 border-none hover:bg-muted/50 dark:bg-card/64 dark:hover:bg-card/80 shadow-[0px_0px_0px_1px_rgba(0,0,0,0.04),0_1px_1px_rgba(0,0,0,0.05),0_2px_2px_rgba(0,0,0,0.05),0_2px_4px_rgba(0,0,0,0.05)] dark:inset-shadow-[0_1px_rgb(255_255_255/0.15)]"
                 )}
                 href={
                   currentPage === totalPages
