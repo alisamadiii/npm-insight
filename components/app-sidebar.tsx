@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 
-import { NavUser } from "@/components/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -15,17 +14,12 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  RiSlowDownLine,
-  RiLeafLine,
-  RiNavigationLine,
-  RiSpeakLine,
-  RiCodeSSlashLine,
-  RiGeminiLine,
-  RiLinksLine,
-  RiDatabase2Line,
-} from "@remixicon/react";
+import { RiSlowDownLine, RiTwitterXFill } from "@remixicon/react";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import SwitchTheme from "./switch-theme";
 
 // This is sample data.
 const data = {
@@ -44,41 +38,6 @@ const data = {
           url: "#",
           icon: RiSlowDownLine,
           isActive: true,
-        },
-        {
-          title: "Transactions",
-          url: "#",
-          icon: RiLeafLine,
-        },
-        {
-          title: "Metrics",
-          url: "#",
-          icon: RiNavigationLine,
-        },
-        {
-          title: "Security",
-          url: "#",
-          icon: RiSpeakLine,
-        },
-        {
-          title: "API",
-          url: "#",
-          icon: RiCodeSSlashLine,
-        },
-        {
-          title: "Quick Setup",
-          url: "#",
-          icon: RiGeminiLine,
-        },
-        {
-          title: "Payment Links",
-          url: "#",
-          icon: RiLinksLine,
-        },
-        {
-          title: "Archive",
-          url: "#",
-          icon: RiDatabase2Line,
         },
       ],
     },
@@ -124,11 +83,23 @@ function SidebarLogo() {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { toggleSidebar, open } = useSidebar();
+
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
-      <SidebarHeader className="h-16 max-md:mt-2 flex-row mb-2 items-center justify-start font-black text-3xl">
+      <SidebarHeader
+        className={cn(
+          "h-16 max-md:mt-2 flex-row mb-2 duration-200 items-center justify-start font-black text-3xl",
+          open ? "" : "text-sm"
+        )}
+      >
         NPM
-        <span className="text-sm font-normal self-end -translate-y-2">
+        <span
+          className={cn(
+            "text-sm font-normal self-end -translate-y-2 duration-200",
+            open ? "opacity-100" : "opacity-0"
+          )}
+        >
           Insight
         </span>
       </SidebarHeader>
@@ -167,7 +138,33 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {open && (
+          <div>
+            <SwitchTheme />
+          </div>
+        )}
+        {open ? (
+          <p className="text-xs text-muted-foreground whitespace-nowrap">
+            Developed by{" "}
+            <Link
+              href="https://x.com/alisamadi__"
+              target="_blank"
+              className="underline text-foreground"
+            >
+              Ali Samadi
+            </Link>
+          </p>
+        ) : (
+          <Link
+            href="https://x.com/alisamadi__"
+            target="_blank"
+            className="underline text-foreground"
+          >
+            <Button size="icon" variant={"outline"}>
+              <RiTwitterXFill />
+            </Button>
+          </Link>
+        )}
       </SidebarFooter>
     </Sidebar>
   );

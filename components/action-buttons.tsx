@@ -23,7 +23,11 @@ export function ActionButtons() {
       <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="outline" className="aspect-square max-lg:p-0">
+            <Button
+              variant="outline"
+              className="aspect-square max-lg:p-0"
+              disabled
+            >
               <RiExpandRightLine
                 className="lg:-ms-1 opacity-40 size-5"
                 size={20}
