@@ -1,6 +1,7 @@
 "use client";
 
-import { useId } from "react";
+import { useId, useState, useEffect, useMemo } from "react";
+import NumberFlow from "@number-flow/react";
 import {
   CartesianGrid,
   Line,
@@ -18,32 +19,94 @@ import {
 } from "@/components/ui/chart";
 import { CustomTooltipContent } from "@/components/charts-extra";
 import { Badge } from "@/components/ui/badge";
+import { useGetDownloads, useGetDownloadsRange } from "@/lib/queries";
 // Subscriber data for the last 12 months
-const chartData = [
-  { month: "Jan 2025", actual: 5000, projected: 2000 },
-  { month: "Feb 2025", actual: 10000, projected: 8000 },
-  { month: "Mar 2025", actual: 15000, projected: 22000 },
-  { month: "Apr 2025", actual: 22000, projected: 15000 },
-  { month: "May 2025", actual: 20000, projected: 25000 },
-  { month: "Jun 2025", actual: 35000, projected: 45000 },
-  { month: "Jul 2025", actual: 30000, projected: 25000 },
-  { month: "Aug 2025", actual: 60000, projected: 70000 },
-  { month: "Sep 2025", actual: 65000, projected: 75000 },
-  { month: "Oct 2025", actual: 60000, projected: 80000 },
-  { month: "Nov 2025", actual: 70000, projected: 65000 },
-  { month: "Dec 2025", actual: 78000, projected: 75000 },
+
+const chartDataValue = [
+  {
+    day: "2025-01-01",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-02",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-03",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-04",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-05",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-06",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-07",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-08",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-09",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-10",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-11",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
+  {
+    day: "2025-01-12",
+    motion: Math.floor(Math.random() * 70000),
+    next: Math.floor(Math.random() * 70000),
+    react: Math.floor(Math.random() * 70000),
+  },
 ];
 
-const chartConfig = {
-  actual: {
-    label: "Actual",
-    color: "var(--chart-1)",
-  },
-  projected: {
-    label: "Projected",
-    color: "var(--chart-3)",
-  },
-} satisfies ChartConfig;
+// const chartConfig = {
+//   actual: {
+//     label: "Actual",
+//     color: "var(--chart-1)",
+//   },
+//   projected: {
+//     label: "Projected",
+//     color: "var(--chart-3)",
+//   },
+// } satisfies ChartConfig;
 
 interface CustomCursorProps {
   fill?: string;
@@ -88,51 +151,85 @@ function CustomCursor(props: CustomCursorProps) {
 }
 
 export function Chart02() {
+  const [downloads, setDownloads] = useState<number>(0);
+
   const id = useId();
 
+  const { data, isPending } = useGetDownloads();
+  const { data: rangeData, isPending: rangeIsPending } = useGetDownloadsRange();
+
+  console.log("rangeData", rangeData);
+
+  useEffect(() => {
+    if (data && !isPending) {
+      setDownloads(data.reduce((acc, curr) => acc + (curr?.downloads || 0), 0));
+    }
+  }, [data, isPending]);
+
+  const chartConfigMemo = useMemo(() => {
+    if (!data) return {};
+
+    return data.reduce((acc, curr) => {
+      if (curr?.package) {
+        acc[curr.package] = {
+          label: curr.package,
+          color: `hsl(${
+            curr.package.split("").reduce((h, c) => h + c.charCodeAt(0), 0) %
+            360
+          }, 70%, 50%)`,
+        };
+      }
+      return acc;
+    }, {} as Record<string, { label: string; color: string }>);
+  }, [data]); // Only recompute when data changes
+
+  const chartDataMemo = useMemo(() => {
+    if (!rangeData) return [];
+
+    return rangeData;
+  }, [rangeData]);
+
   return (
-    <Card className="gap-4">
+    <Card className="gap-4 sticky top-0">
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-0.5">
-            <CardTitle>Active Subscribers</CardTitle>
+            <CardTitle>Downloads</CardTitle>
             <div className="flex items-start gap-2">
-              <div className="font-semibold text-2xl">142,869</div>
+              <div className="font-semibold text-2xl">
+                <NumberFlow value={downloads} />
+              </div>
               <Badge className="mt-1.5 bg-emerald-500/24 text-emerald-500 border-none">
                 +24.7%
               </Badge>
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div
-                aria-hidden="true"
-                className="size-1.5 shrink-0 rounded-xs bg-chart-1"
-              ></div>
-              <div className="text-[13px]/3 text-muted-foreground/50">
-                Actual
+            {Object.values(chartConfigMemo).map((item, index) => (
+              <div className="flex items-center gap-2">
+                <div
+                  aria-hidden="true"
+                  className="size-1.5 shrink-0 rounded-xs"
+                  style={{
+                    backgroundColor: item?.color,
+                  }}
+                ></div>
+                <div className="text-[13px]/3 text-muted-foreground/50">
+                  {item?.label}
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                aria-hidden="true"
-                className="size-1.5 shrink-0 rounded-xs bg-chart-3"
-              ></div>
-              <div className="text-[13px]/3 text-muted-foreground/50">
-                Projected
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </CardHeader>
       <CardContent>
         <ChartContainer
-          config={chartConfig}
+          config={chartConfigMemo}
           className="aspect-auto h-60 w-full [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-(--chart-1)/15 [&_.recharts-rectangle.recharts-tooltip-inner-cursor]:fill-white/20"
         >
           <LineChart
             accessibilityLayer
-            data={chartData}
+            data={chartDataMemo}
             margin={{ left: -12, right: 12, top: 12 }}
           >
             <defs>
@@ -147,59 +244,61 @@ export function Chart02() {
               stroke="var(--border)"
             />
             <XAxis
-              dataKey="month"
+              dataKey="day"
               tickLine={false}
               tickMargin={12}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickFormatter={(value) => value.slice(0, 10)}
               stroke="var(--border)"
             />
             <YAxis
               axisLine={false}
               tickLine={false}
-              tickFormatter={(value) => {
-                if (value === 0) return "$0";
-                return `${value / 1000}k`;
-              }}
+              // tickFormatter={(value) => {
+              //   if (value === 0) return "$0";
+              //   return `${value / 1000}k`;
+              // }}
               interval="preserveStartEnd"
-            />
-            <Line
-              type="linear"
-              dataKey="projected"
-              stroke="var(--color-projected)"
-              strokeWidth={2}
-              dot={false}
-              activeDot={false}
             />
             <ChartTooltip
               content={
                 <CustomTooltipContent
-                  colorMap={{
-                    actual: "var(--chart-1)",
-                    projected: "var(--chart-3)",
-                  }}
-                  labelMap={{
-                    actual: "Actual",
-                    projected: "Projected",
-                  }}
-                  dataKeys={["actual", "projected"]}
-                  valueFormatter={(value) => `$${value.toLocaleString()}`}
+                  colorMap={Object.values(chartConfigMemo).reduce(
+                    (acc, item) => {
+                      acc[item?.label] = item?.color;
+                      return acc;
+                    },
+                    {} as Record<string, string>
+                  )}
+                  labelMap={Object.values(chartConfigMemo).reduce(
+                    (acc, item) => {
+                      acc[item?.label] = item?.label;
+                      return acc;
+                    },
+                    {} as Record<string, string>
+                  )}
+                  dataKeys={Object.values(chartConfigMemo).map(
+                    (item) => item?.label
+                  )}
+                  valueFormatter={(value) => `${value.toLocaleString()}`}
                 />
               }
               cursor={<CustomCursor fill="var(--chart-1)" />}
             />
-            <Line
-              type="linear"
-              dataKey="actual"
-              stroke={`url(#${id}-gradient)`}
-              strokeWidth={2}
-              dot={false}
-              activeDot={{
-                r: 5,
-                fill: "var(--chart-1)",
-                stroke: "var(--background)",
-                strokeWidth: 2,
-              }}
-            />
+            {Object.values(chartConfigMemo).map((item, index) => (
+              <Line
+                type="linear"
+                dataKey={item?.label}
+                stroke={item?.color}
+                strokeWidth={2}
+                dot={false}
+                activeDot={{
+                  r: 5,
+                  fill: item?.color,
+                  stroke: "var(--background)",
+                  strokeWidth: 2,
+                }}
+              />
+            ))}
           </LineChart>
         </ChartContainer>
       </CardContent>

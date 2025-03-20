@@ -26,6 +26,8 @@ import { Chart04 } from "@/components/chart-04";
 import { Chart05 } from "@/components/chart-05";
 import { Chart06 } from "@/components/chart-06";
 import { ActionButtons } from "@/components/action-buttons";
+import SearchBar from "@/components/search-bar";
+import { Suspense } from "react";
 
 export default function Page() {
   return (
@@ -59,15 +61,18 @@ export default function Page() {
               {/* Right side */}
               <ActionButtons />
             </header>
-            <div className="overflow-hidden">
-              <div className="grid auto-rows-min @2xl:grid-cols-2 *:-ms-px *:-mt-px -m-px">
-                <Chart01 />
+            <Suspense>
+              <SearchBar />
+            </Suspense>
+            <div className="grid auto-rows-min items-start @2xl:grid-cols-2 *:-ms-px *:-mt-px -m-px">
+              {/* <Chart01 /> */}
+              <Suspense>
                 <Chart02 />
                 <Chart03 />
-                <Chart04 />
+              </Suspense>
+              {/* <Chart04 />
                 <Chart05 />
-                <Chart06 />
-              </div>
+                <Chart06 /> */}
             </div>
           </div>
         </div>

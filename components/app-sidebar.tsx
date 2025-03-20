@@ -126,8 +126,11 @@ function SidebarLogo() {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" variant="inset" {...props}>
-      <SidebarHeader className="h-16 max-md:mt-2 mb-2 justify-center">
-        <SidebarLogo />
+      <SidebarHeader className="h-16 max-md:mt-2 flex-row mb-2 items-center justify-start font-black text-3xl">
+        NPM
+        <span className="text-sm font-normal self-end -translate-y-2">
+          Insight
+        </span>
       </SidebarHeader>
       <SidebarContent className="-mt-2">
         {data.navMain.map((item) => (

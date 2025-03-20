@@ -21,6 +21,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useState } from "react";
 import { DateRange } from "react-day-picker";
+import { useSearchParams } from "next/navigation";
 
 export default function DatePicker() {
   const today = new Date();
@@ -52,9 +53,20 @@ export default function DatePicker() {
     from: startOfYear(subYears(today, 1)),
     to: endOfYear(subYears(today, 1)),
   };
+
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date");
+
   const [month, setMonth] = useState(today);
 
-  const [date, setDate] = useState<DateRange | undefined>(lastYear);
+  const [date, setDate] = useState<DateRange | undefined>(
+    dateParam
+      ? {
+          from: new Date(dateParam.split(" to ")[0]),
+          to: new Date(dateParam.split(" to ")[1]),
+        }
+      : last7Days
+  );
 
   return (
     <div className="*:not-first:mt-2">
@@ -185,8 +197,23 @@ export default function DatePicker() {
               mode="range"
               selected={date}
               onSelect={(newDate) => {
+                const searchParams = new URLSearchParams(
+                  window.location.search
+                );
                 if (newDate) {
                   setDate(newDate);
+                  searchParams.set(
+                    "date",
+                    `${format(newDate.from || today, "MMM d yyyy")} to ${format(
+                      newDate.to || today,
+                      "MMM d yyyy"
+                    )}`
+                  );
+                  window.history.pushState(
+                    {},
+                    "",
+                    `/?${searchParams.toString()}`
+                  );
                 }
               }}
               month={month}
