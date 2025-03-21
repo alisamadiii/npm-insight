@@ -103,7 +103,18 @@ export function useGetDownloads() {
   });
 
   return {
-    data: queries.map((query) => query.data),
+    data: queries
+      .map((query) => query.data)
+      .reduce((acc, curr, index) => {
+        if (curr?.package) {
+          acc[curr.package] = {
+            downloads: curr.downloads,
+            label: curr.package,
+            color: `var(--chart-custom-${index + 1})`,
+          };
+        }
+        return acc;
+      }, {} as Record<string, { downloads: number; label: string; color: string }>),
     isPending: queries.every((query) => query.isPending),
   };
 }

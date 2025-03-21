@@ -39,6 +39,17 @@
   --sidebar-ring: oklch(0.871 0.006 286.286);
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
+
+  --chart-custom-1: #2563eb; /* Royal Blue */
+  --chart-custom-2: #16a34a; /* Emerald Green */
+  --chart-custom-3: #dc2626; /* Cherry Red */
+  --chart-custom-4: #9333ea; /* Purple */
+  --chart-custom-5: #ea580c; /* Orange */
+  --chart-custom-6: #0891b2; /* Cyan */
+  --chart-custom-7: #4f46e5; /* Indigo */
+  --chart-custom-8: #db2777; /* Pink */
+  --chart-custom-9: #65a30d; /* Lime Green */
+  --chart-custom-10: #0d9488; /* Teal */
 }
 .dark {
   --background: oklch(0.183 0.006 285.79);
@@ -74,6 +85,17 @@
   --sidebar-accent-foreground: oklch(0.967 0.001 286.375);
   --sidebar-border: oklch(0.274 0.006 286.033);
   --sidebar-ring: oklch(0.442 0.017 285.786);
+
+  --chart-custom-1: #60a5fa; /* Lighter Royal Blue */
+  --chart-custom-2: #4ade80; /* Lighter Emerald */
+  --chart-custom-3: #f87171; /* Lighter Red */
+  --chart-custom-4: #c084fc; /* Lighter Purple */
+  --chart-custom-5: #fb923c; /* Lighter Orange */
+  --chart-custom-6: #22d3ee; /* Lighter Cyan */
+  --chart-custom-7: #818cf8; /* Lighter Indigo */
+  --chart-custom-8: #f472b6; /* Lighter Pink */
+  --chart-custom-9: #a3e635; /* Lighter Lime */
+  --chart-custom-10: #2dd4bf; /* Lighter Teal */
 }
 
 @theme inline {
@@ -128,6 +150,28 @@
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-chart-custom-1: var(--chart-custom-1);
+  --color-chart-custom-2: var(--chart-custom-2);
+  --color-chart-custom-3: var(--chart-custom-3);
+  --color-chart-custom-4: var(--chart-custom-4);
+  --color-chart-custom-5: var(--chart-custom-5);
+  --color-chart-custom-6: var(--chart-custom-6);
+  --color-chart-custom-7: var(--chart-custom-7);
+  --color-chart-custom-8: var(--chart-custom-8);
+  --color-chart-custom-9: var(--chart-custom-9);
+  --color-chart-custom-10: var(--chart-custom-10);
+
+  --animate-fade-in: fadeIn 0.5s cubic-bezier(0.4, 0, 0.6, 1);
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
 /*

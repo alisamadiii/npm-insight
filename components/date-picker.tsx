@@ -212,7 +212,7 @@ export default function DatePicker() {
                   window.history.pushState(
                     {},
                     "",
-                    `/?${searchParams.toString()}`
+                    `?${searchParams.toString()}`
                   );
                 }
               }}

@@ -15,6 +15,7 @@ import {
   Github,
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { Skeleton } from "./ui/skeleton";
 
 export function Chart03() {
   const { data, isPending } = useGetPackageInfo();
@@ -31,7 +32,7 @@ export function Chart03() {
       <CardContent className="px-3">
         <div className="flex flex-col gap-4">
           {data?.map((item, index) => (
-            <PackageInfo key={index} data={item} />
+            <PackageInfo key={index} data={item} isPending={isPending} />
           ))}
         </div>
       </CardContent>
@@ -39,16 +40,30 @@ export function Chart03() {
   );
 }
 
-export function PackageInfo({ data }: { data?: Partial<PackageInfo> }) {
+export function PackageInfo({
+  data,
+  isPending,
+}: {
+  data?: Partial<PackageInfo>;
+  isPending: boolean;
+}) {
   return (
     <div className="space-y-6 p-6 bg-card rounded-lg border">
       {/* Header Section */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">{data?.name}</h2>
+          {!isPending ? (
+            <h2 className="text-xl font-semibold">{data?.name}</h2>
+          ) : (
+            <Skeleton className="h-7 w-40" />
+          )}
           <Badge variant="secondary">v{data?.version}</Badge>
         </div>
-        <p className="text-muted-foreground text-sm">{data?.description}</p>
+        {!isPending ? (
+          <p className="text-muted-foreground text-sm">{data?.description}</p>
+        ) : (
+          <Skeleton className="h-5 w-2/7" />
+        )}
       </div>
 
       {/* Stats Grid */}
@@ -78,17 +93,25 @@ export function PackageInfo({ data }: { data?: Partial<PackageInfo> }) {
       {/* Maintainers Section */}
       <div className="space-y-2">
         <h3 className="text-sm font-medium">Maintainers</h3>
-        <div className="flex flex-wrap gap-2">
-          {data?.maintainers?.map((maintainer) => (
-            <MaintainerBadge key={maintainer.name} maintainer={maintainer} />
-          ))}
-        </div>
+        {!isPending ? (
+          <div className="flex flex-wrap gap-2">
+            {data?.maintainers?.map((maintainer) => (
+              <MaintainerBadge key={maintainer.name} maintainer={maintainer} />
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-12" />
+          </div>
+        )}
       </div>
 
       {/* Keywords Section */}
-      {data?.keywords && data?.keywords?.length > 0 && (
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium">Keywords</h3>
+      <div className="space-y-2">
+        <h3 className="text-sm font-medium">Keywords</h3>
+        {!isPending ? (
           <div className="flex flex-wrap gap-2">
             {data?.keywords?.map((keyword) => (
               <Badge key={keyword} variant="secondary" className="text-xs">
@@ -96,8 +119,16 @@ export function PackageInfo({ data }: { data?: Partial<PackageInfo> }) {
               </Badge>
             ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-12" />
+          </div>
+        )}
+      </div>
 
       {/* Links Section */}
       <div className="flex gap-4 pt-4 border-t">
