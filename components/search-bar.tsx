@@ -41,7 +41,7 @@ export default function SearchBar() {
             } else {
               searchParams.delete("packages");
             }
-            window.history.pushState({}, "", `/?${searchParams.toString()}`);
+            window.history.pushState({}, "", `?${searchParams.toString()}`);
             setExampleTags(newTags);
           }}
           placeholder="Add a package name"
