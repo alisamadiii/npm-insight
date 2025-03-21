@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Experiment 03 - Crafted.is",
+  title: "Analytics",
 };
 
 import {

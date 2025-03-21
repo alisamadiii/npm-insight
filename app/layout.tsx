@@ -7,6 +7,7 @@ import QueryClientProviders from "@/providers/react-query";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -17,6 +18,31 @@ const geistMono = Geist_Mono({
   variable: "--font-mono",
   subsets: ["latin"],
 });
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | NPM Insight",
+    default: "NPM Insight",
+  },
+  description: "Analyze npm packages and their dependencies.",
+  openGraph: {
+    title: "NPM Insight",
+    description: "Analyze npm packages and their dependencies.",
+    url: "https://npminsight.com",
+    siteName: "NPM Insight",
+    images:
+      "https://vztpjn0djt.ufs.sh/f/RAHCy45jEyblqZhJpQN1opnm0cGA2WENXaT1iRdxvljwrkbe",
+  },
+  icons: {
+    other: [
+      {
+        rel: "mask-icon",
+        url: "/",
+        color: "#ffffff",
+      },
+    ],
+  },
+};
 
 export default function RootLayout({
   children,
