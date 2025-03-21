@@ -1,4 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
+import PlausibleProvider from "next-plausible";
+
 import { ThemeProvider } from "../providers/theme-provider";
 import "./globals.css";
 import QueryClientProviders from "@/providers/react-query";
@@ -27,17 +29,19 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >
         <QueryClientProviders>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset>{children}</SidebarInset>
-            </SidebarProvider>
-          </ThemeProvider>
+          <PlausibleProvider domain="npminsight.com">
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset>{children}</SidebarInset>
+              </SidebarProvider>
+            </ThemeProvider>
+          </PlausibleProvider>
         </QueryClientProviders>
       </body>
     </html>
