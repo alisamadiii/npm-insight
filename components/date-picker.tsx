@@ -68,6 +68,17 @@ export default function DatePicker() {
       : last7Days
   );
 
+  const onButtonClick = (date: { from: Date; to: Date }) => {
+    const searchParams = new URLSearchParams(window.location.search);
+    setDate(date);
+    setMonth(date.to);
+    searchParams.set(
+      "date",
+      `${format(date.from, "MMM d yyyy")} to ${format(date.to, "MMM d yyyy")}`
+    );
+    window.history.pushState({}, "", `?${searchParams.toString()}`);
+  };
+
   return (
     <div className="*:not-first:mt-2">
       <Popover>
@@ -104,11 +115,10 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate({
+                      onButtonClick({
                         from: today,
                         to: today,
                       });
-                      setMonth(today);
                     }}
                   >
                     Today
@@ -118,8 +128,10 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(yesterday);
-                      setMonth(yesterday.to);
+                      onButtonClick({
+                        from: subDays(today, 1),
+                        to: subDays(today, 1),
+                      });
                     }}
                   >
                     Yesterday
@@ -129,8 +141,7 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(last7Days);
-                      setMonth(last7Days.to);
+                      onButtonClick(last7Days);
                     }}
                   >
                     Last 7 days
@@ -140,8 +151,7 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(last30Days);
-                      setMonth(last30Days.to);
+                      onButtonClick(last30Days);
                     }}
                   >
                     Last 30 days
@@ -151,8 +161,7 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(monthToDate);
-                      setMonth(monthToDate.to);
+                      onButtonClick(monthToDate);
                     }}
                   >
                     Month to date
@@ -162,8 +171,7 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(lastMonth);
-                      setMonth(lastMonth.to);
+                      onButtonClick(lastMonth);
                     }}
                   >
                     Last month
@@ -173,8 +181,7 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(yearToDate);
-                      setMonth(yearToDate.to);
+                      onButtonClick(yearToDate);
                     }}
                   >
                     Year to date
@@ -184,8 +191,7 @@ export default function DatePicker() {
                     size="sm"
                     className="w-full justify-start"
                     onClick={() => {
-                      setDate(lastYear);
-                      setMonth(lastYear.to);
+                      onButtonClick(lastYear);
                     }}
                   >
                     Last year
