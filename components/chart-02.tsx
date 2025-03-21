@@ -12,16 +12,16 @@ import {
 } from "recharts";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { CustomTooltipContent } from "@/components/charts-extra";
-import { Badge } from "@/components/ui/badge";
 import { useGetDownloads, useGetDownloadsRange } from "@/lib/queries";
-import { Skeleton } from "./ui/skeleton";
-// Subscriber data for the last 12 months
+import { Separator } from "./ui/separator";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "./ui/tooltip";
 
 const chartDataValue = [
   {
@@ -122,17 +122,6 @@ const chartDataValue = [
   },
 ];
 
-// const chartConfig = {
-//   actual: {
-//     label: "Actual",
-//     color: "var(--chart-1)",
-//   },
-//   projected: {
-//     label: "Projected",
-//     color: "var(--chart-3)",
-//   },
-// } satisfies ChartConfig;
-
 interface CustomCursorProps {
   fill?: string;
   pointerEvents?: string;
@@ -204,8 +193,98 @@ export function Chart02() {
     }
   }, [rangeData, rangeIsPending]);
 
+  const weeklyData = useMemo(() => {
+    if (!rangeData) return [];
+
+    const weeklyAggregates: Record<string, any> = {};
+
+    rangeData.forEach((dayData: any) => {
+      // Get the week start date (Sunday)
+      const date = new Date(dayData.day);
+      const weekStart = new Date(date);
+      weekStart.setDate(date.getDate() - date.getDay());
+      const weekKey = weekStart.toISOString().split("T")[0];
+
+      if (!weeklyAggregates[weekKey]) {
+        weeklyAggregates[weekKey] = {
+          day: weekKey,
+          ...Object.keys(dayData)
+            .filter((key) => key !== "day")
+            .reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+        };
+      }
+
+      // Sum up all the values for each package
+      Object.keys(dayData).forEach((key) => {
+        if (key !== "day") {
+          weeklyAggregates[weekKey][key] += dayData[key];
+        }
+      });
+    });
+
+    return Object.values(weeklyAggregates);
+  }, [rangeData]);
+
+  const monthlyData = useMemo(() => {
+    if (!rangeData) return [];
+
+    const monthlyAggregates: Record<string, any> = {};
+
+    rangeData.forEach((dayData: any) => {
+      const date = new Date(dayData.day);
+      const monthKey = date.toISOString().split("T")[0].slice(0, 7);
+
+      if (!monthlyAggregates[monthKey]) {
+        monthlyAggregates[monthKey] = {
+          day: monthKey,
+          ...Object.keys(dayData)
+            .filter((key) => key !== "day")
+            .reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+        };
+      }
+
+      Object.keys(dayData).forEach((key) => {
+        if (key !== "day") {
+          monthlyAggregates[monthKey][key] += dayData[key];
+        }
+      });
+    });
+
+    return Object.values(monthlyAggregates);
+  }, [rangeData]);
+
+  const yearlyData = useMemo(() => {
+    if (!rangeData) return [];
+
+    const yearlyAggregates: Record<string, any> = {};
+
+    rangeData.forEach((dayData: any) => {
+      const date = new Date(dayData.day);
+      const yearKey = date.toISOString().split("T")[0].slice(0, 4);
+
+      if (!yearlyAggregates[yearKey]) {
+        yearlyAggregates[yearKey] = {
+          day: yearKey,
+          ...Object.keys(dayData)
+            .filter((key) => key !== "day")
+            .reduce((acc, key) => ({ ...acc, [key]: 0 }), {}),
+        };
+      }
+
+      Object.keys(dayData).forEach((key) => {
+        if (key !== "day") {
+          yearlyAggregates[yearKey][key] += dayData[key];
+        }
+      });
+    });
+
+    return Object.values(yearlyAggregates);
+  }, [rangeData]);
+
+  console.log(weeklyData);
+
   return (
-    <Card className="gap-4 sticky top-0">
+    <Card className="gap-4">
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-0.5">
@@ -221,21 +300,30 @@ export function Chart02() {
           </div>
           <div className="flex flex-wrap items-center gap-4">
             {Object.values(data).map((item, index) => (
-              <div
-                key={`${item?.label}-${index}-header-text`}
-                className="flex items-center gap-2"
-              >
-                <div
-                  aria-hidden="true"
-                  className="size-1.5 shrink-0 rounded-xs"
-                  style={{
-                    backgroundColor: item?.color,
-                  }}
-                ></div>
-                <div className="text-[13px]/3 text-muted-foreground/50">
-                  {item?.label}
-                </div>
-              </div>
+              <TooltipProvider key={`${item?.label}-${index}-header-text`}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div
+                      key={`${item?.label}-${index}-header-text`}
+                      className="flex items-center gap-2"
+                    >
+                      <div
+                        aria-hidden="true"
+                        className="size-1.5 shrink-0 rounded-xs"
+                        style={{
+                          backgroundColor: item?.color,
+                        }}
+                      ></div>
+                      <div className="text-[13px]/3 text-muted-foreground/50">
+                        {item?.label}
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{item?.downloads?.toLocaleString()}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             ))}
           </div>
         </div>
@@ -309,6 +397,276 @@ export function Chart02() {
               {Object.values(data).map((item, index) => (
                 <Line
                   key={`${item?.label}-${index}-line`}
+                  type="linear"
+                  dataKey={item?.label}
+                  stroke={item?.color}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{
+                    r: 5,
+                    fill: item?.color,
+                    stroke: "var(--background)",
+                    strokeWidth: 2,
+                  }}
+                />
+              ))}
+            </LineChart>
+          ) : (
+            <div></div>
+          )}
+        </ChartContainer>
+      </CardContent>
+      <Separator className="mt-4" />
+      <CardContent>
+        <h3 className="text-lg font-medium mb-4">Weekly</h3>
+        <ChartContainer
+          config={data}
+          className="aspect-auto h-60 w-full [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-(--chart-1)/15 [&_.recharts-rectangle.recharts-tooltip-inner-cursor]:fill-white/20"
+        >
+          {showChart ? (
+            <LineChart
+              accessibilityLayer
+              data={weeklyData}
+              margin={{ left: -12, right: 12, top: 12 }}
+            >
+              <defs>
+                <linearGradient
+                  id={`${id}-gradient`}
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="0"
+                >
+                  <stop offset="0%" stopColor="var(--chart-2)" />
+                  <stop offset="100%" stopColor="var(--chart-1)" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="2 2"
+                stroke="var(--border)"
+              />
+              <XAxis
+                dataKey="day"
+                tickLine={false}
+                tickMargin={12}
+                tickFormatter={(value) => value.slice(0, 10)}
+                stroke="var(--border)"
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value) => {
+                  if (value === 0) return "$0";
+                  if (value >= 1000000000)
+                    return `${(value / 1000000000).toFixed(1)}b`;
+                  if (value >= 1000000)
+                    return `${(value / 1000000).toFixed(1)}m`;
+                  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+                  return `${value}`;
+                }}
+                interval="preserveStartEnd"
+              />
+              <ChartTooltip
+                content={
+                  <CustomTooltipContent
+                    colorMap={Object.values(data).reduce((acc, item) => {
+                      acc[item?.label] = item?.color;
+                      return acc;
+                    }, {} as Record<string, string>)}
+                    labelMap={Object.values(data).reduce((acc, item) => {
+                      acc[item?.label] = item?.label;
+                      return acc;
+                    }, {} as Record<string, string>)}
+                    dataKeys={Object.values(data).map((item) => item?.label)}
+                    valueFormatter={(value) => `${value.toLocaleString()}`}
+                  />
+                }
+                cursor={<CustomCursor fill="var(--chart-1)" />}
+              />
+              {Object.values(data).map((item, index) => (
+                <Line
+                  key={`${item?.label}-${index}-line-weekly`}
+                  type="linear"
+                  dataKey={item?.label}
+                  stroke={item?.color}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{
+                    r: 5,
+                    fill: item?.color,
+                    stroke: "var(--background)",
+                    strokeWidth: 2,
+                  }}
+                />
+              ))}
+            </LineChart>
+          ) : (
+            <div></div>
+          )}
+        </ChartContainer>
+      </CardContent>
+      <Separator className="mt-4" />
+      <CardContent>
+        <h3 className="text-lg font-medium mb-4">Monthly</h3>
+        <ChartContainer
+          config={data}
+          className="aspect-auto h-60 w-full [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-(--chart-1)/15 [&_.recharts-rectangle.recharts-tooltip-inner-cursor]:fill-white/20"
+        >
+          {showChart ? (
+            <LineChart
+              accessibilityLayer
+              data={monthlyData}
+              margin={{ left: -12, right: 12, top: 12 }}
+            >
+              <defs>
+                <linearGradient
+                  id={`${id}-gradient`}
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="0"
+                >
+                  <stop offset="0%" stopColor="var(--chart-2)" />
+                  <stop offset="100%" stopColor="var(--chart-1)" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="2 2"
+                stroke="var(--border)"
+              />
+              <XAxis
+                dataKey="day"
+                tickLine={false}
+                tickMargin={12}
+                tickFormatter={(value) => value.slice(0, 10)}
+                stroke="var(--border)"
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value) => {
+                  if (value === 0) return "$0";
+                  if (value >= 1000000000)
+                    return `${(value / 1000000000).toFixed(1)}b`;
+                  if (value >= 1000000)
+                    return `${(value / 1000000).toFixed(1)}m`;
+                  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+                  return `${value}`;
+                }}
+                interval="preserveStartEnd"
+              />
+              <ChartTooltip
+                content={
+                  <CustomTooltipContent
+                    colorMap={Object.values(data).reduce((acc, item) => {
+                      acc[item?.label] = item?.color;
+                      return acc;
+                    }, {} as Record<string, string>)}
+                    labelMap={Object.values(data).reduce((acc, item) => {
+                      acc[item?.label] = item?.label;
+                      return acc;
+                    }, {} as Record<string, string>)}
+                    dataKeys={Object.values(data).map((item) => item?.label)}
+                    valueFormatter={(value) => `${value.toLocaleString()}`}
+                  />
+                }
+                cursor={<CustomCursor fill="var(--chart-1)" />}
+              />
+              {Object.values(data).map((item, index) => (
+                <Line
+                  key={`${item?.label}-${index}-line-monthly`}
+                  type="linear"
+                  dataKey={item?.label}
+                  stroke={item?.color}
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{
+                    r: 5,
+                    fill: item?.color,
+                    stroke: "var(--background)",
+                    strokeWidth: 2,
+                  }}
+                />
+              ))}
+            </LineChart>
+          ) : (
+            <div></div>
+          )}
+        </ChartContainer>
+      </CardContent>
+      <Separator className="mt-4" />
+      <CardContent>
+        <h3 className="text-lg font-medium mb-4">Yearly</h3>
+        <ChartContainer
+          config={data}
+          className="aspect-auto h-60 w-full [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-(--chart-1)/15 [&_.recharts-rectangle.recharts-tooltip-inner-cursor]:fill-white/20"
+        >
+          {showChart ? (
+            <LineChart
+              accessibilityLayer
+              data={yearlyData}
+              margin={{ left: -12, right: 12, top: 12 }}
+            >
+              <defs>
+                <linearGradient
+                  id={`${id}-gradient`}
+                  x1="0"
+                  y1="0"
+                  x2="1"
+                  y2="0"
+                >
+                  <stop offset="0%" stopColor="var(--chart-2)" />
+                  <stop offset="100%" stopColor="var(--chart-1)" />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                vertical={false}
+                strokeDasharray="2 2"
+                stroke="var(--border)"
+              />
+              <XAxis
+                dataKey="day"
+                tickLine={false}
+                tickMargin={12}
+                tickFormatter={(value) => value.slice(0, 10)}
+                stroke="var(--border)"
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value) => {
+                  if (value === 0) return "$0";
+                  if (value >= 1000000000)
+                    return `${(value / 1000000000).toFixed(1)}b`;
+                  if (value >= 1000000)
+                    return `${(value / 1000000).toFixed(1)}m`;
+                  if (value >= 1000) return `${(value / 1000).toFixed(1)}k`;
+                  return `${value}`;
+                }}
+                interval="preserveStartEnd"
+              />
+              <ChartTooltip
+                content={
+                  <CustomTooltipContent
+                    colorMap={Object.values(data).reduce((acc, item) => {
+                      acc[item?.label] = item?.color;
+                      return acc;
+                    }, {} as Record<string, string>)}
+                    labelMap={Object.values(data).reduce((acc, item) => {
+                      acc[item?.label] = item?.label;
+                      return acc;
+                    }, {} as Record<string, string>)}
+                    dataKeys={Object.values(data).map((item) => item?.label)}
+                    valueFormatter={(value) => `${value.toLocaleString()}`}
+                  />
+                }
+                cursor={<CustomCursor fill="var(--chart-1)" />}
+              />
+              {Object.values(data).map((item, index) => (
+                <Line
+                  key={`${item?.label}-${index}-line-yearly`}
                   type="linear"
                   dataKey={item?.label}
                   stroke={item?.color}
