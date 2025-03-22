@@ -16,7 +16,12 @@ import {
   SidebarMenuButton,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { RiGithubFill, RiSlowDownLine, RiTwitterXFill } from "@remixicon/react";
+import {
+  RiGithubFill,
+  RiSlowDownLine,
+  RiTwitterXFill,
+  RiBookOpenLine,
+} from "@remixicon/react";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 import SwitchTheme from "./switch-theme";
@@ -38,6 +43,12 @@ const data = {
           url: "/analytics",
           icon: RiSlowDownLine,
           isActive: true,
+        },
+        {
+          title: "Readme",
+          url: "/readme/react",
+          icon: RiBookOpenLine,
+          isActive: false,
         },
       ],
     },
@@ -61,7 +72,7 @@ function SidebarLogo() {
             open ? "" : "scale-80 -translate-x-0.5"
           )}
         >
-          <g clip-path="url(#clip0_116_4)">
+          <g clipPath="url(#clip0_116_4)">
             <path
               d="M4.19 33C3.82333 33 3.64 32.8167 3.64 32.45V4.224C3.64 3.85733 3.82333 3.674 4.19 3.674H16.686C17.038 3.674 17.3313 3.79133 17.566 4.026L21.966 8.426C22.2153 8.67533 22.34 8.96867 22.34 9.306V32.45C22.34 32.8167 22.1567 33 21.79 33H15.564C15.1973 33 15.014 32.8167 15.014 32.45V9.526H10.966V32.45C10.966 32.8167 10.7827 33 10.416 33H4.19ZM25.0866 33C24.7199 33 24.5366 32.8167 24.5366 32.45V4.224C24.5366 3.85733 24.7199 3.674 25.0866 3.674H31.3126C31.6792 3.674 31.8626 3.85733 31.8626 4.224V32.45C31.8626 32.8167 31.6792 33 31.3126 33H25.0866Z"
               fill="currentColor"
@@ -102,7 +113,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       tooltip={item.title}
                       isActive={item.isActive}
                     >
-                      <a href={item.url}>
+                      <Link href={item.url}>
                         {item.icon && (
                           <item.icon
                             className="text-muted-foreground/65 group-data-[active=true]/menu-button:text-primary"
@@ -111,7 +122,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                           />
                         )}
                         <span>{item.title}</span>
-                      </a>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}

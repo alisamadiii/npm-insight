@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import PlausibleProvider from "next-plausible";
+import { Metadata } from "next";
 
 import { ThemeProvider } from "../providers/theme-provider";
 import "./globals.css";
@@ -7,7 +8,6 @@ import QueryClientProviders from "@/providers/react-query";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
-import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-sans",

@@ -13,6 +13,7 @@ import {
   Globe,
   Package,
   Github,
+  BookOpen,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Skeleton } from "./ui/skeleton";
@@ -159,6 +160,13 @@ export function PackageInfo({
         >
           <Package className="h-4 w-4" />
           NPM
+        </Link>
+        <Link
+          href={`/readme/${data?.name}`}
+          className="text-sm text-muted-foreground hover:text-primary flex items-center gap-1"
+        >
+          <BookOpen className="h-4 w-4" />
+          Readme
         </Link>
       </div>
     </div>

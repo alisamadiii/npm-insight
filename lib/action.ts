@@ -99,3 +99,21 @@ export async function getDownloadsRange(
     return { error: "Failed to fetch data" };
   }
 }
+
+export async function getReadme(
+  slug: string
+): Promise<{ data?: string; error?: string }> {
+  try {
+    const res = await fetch(`https://unpkg.com/${slug}/README.md`, {
+      cache: "force-cache",
+      next: {
+        revalidate: REVALIDATE_TIME,
+      },
+    });
+    const data = await res.text();
+    return { data };
+  } catch (error) {
+    console.error(error);
+    return { error: "Failed to fetch data" };
+  }
+}
